@@ -4,6 +4,7 @@ import com.xili.userservice.user.api.UserDto;
 import com.xili.userservice.user.entity.User;
 import com.xili.userservice.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,13 +19,17 @@ import java.util.stream.Collectors;
  */
 @Service
 public class UserService {
+
+    @Value("${server.port}")
+    protected int serverPort = 0;
+
     @Autowired
     protected UserRepository userRepository;
 
     public List<UserDto> findAll() {
         List<User> users = this.userRepository.findAll();
         return users.stream().map((user) -> {
-            return new UserDto(user);
+            return new UserDto(user, serverPort);
         }).collect(Collectors.toList());
     }
 
@@ -33,7 +38,7 @@ public class UserService {
         if (null == user)
             return null;
 
-        return new UserDto(user);
+        return new UserDto(user, serverPort);
     }
 
     public UserDto save(UserDto userDto) {
@@ -45,7 +50,7 @@ public class UserService {
         user.setAvatar(userDto.getAvatar());
         this.userRepository.save(user);
 
-        return new UserDto(user);
+        return new UserDto(user, serverPort);
     }
 
     public void delete(Long id) {

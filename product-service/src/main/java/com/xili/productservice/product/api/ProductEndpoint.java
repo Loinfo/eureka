@@ -4,6 +4,7 @@ import com.xili.productservice.product.entity.Product;
 import com.xili.productservice.product.entity.ProductComment;
 import com.xili.productservice.product.repository.ProductCommentRepository;
 import com.xili.productservice.product.repository.ProductRepository;
+import com.xili.productservice.product.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +35,12 @@ public class ProductEndpoint {
     @Autowired
     private ProductCommentRepository productCommentRepository;
 
+//    @Autowired
+//    @Qualifier(value = "restTemplate")
+//    private RestTemplate restTemplate;
+
     @Autowired
-    @Qualifier(value = "restTemplate")
-    private RestTemplate restTemplate;
+    UserService userService;
 
     /**
      * 获取商品列表
@@ -71,7 +75,8 @@ public class ProductEndpoint {
         return commentList.stream().map((comment) -> {
             ProductCommentDto dto = new ProductCommentDto(comment);
             dto.setProduct(this.productRepository.findOne(comment.getProductId()));
-            dto.setAuthor(this.loadUser(comment.getAuthorId()));
+//            dto.setAuthor(this.loadUser(comment.getAuthorId()));
+            dto.setAuthor(userService.load(comment.getAuthorId()));
             return dto;
         }).collect(Collectors.toList());
     }
@@ -81,8 +86,8 @@ public class ProductEndpoint {
      * @param userId 用户Id
      * @return
      */
-    protected UserDto loadUser(Long userId) {
-        UserDto userDto = this.restTemplate.getForEntity("http://USERSERVICE/users/{id}", UserDto.class, userId).getBody();
-        return userDto;
-    }
+//    protected UserDto loadUser(Long userId) {
+//        UserDto userDto = this.restTemplate.getForEntity("http://USERSERVICE/users/{id}", UserDto.class, userId).getBody();
+//        return userDto;
+//    }
 }
